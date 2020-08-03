@@ -1,0 +1,280 @@
+Collections
+
+VARRAY | ARRAY | VARYING ARRAY
+PL/SQL RECORD
+PL/SQL TABLE | ASSOCIATIVE ARRAY | NESTED TABLE | INDEX BY TABLE  (VARCHAR2 | PLS_INTEGER | BINARY_INTEGER)
+
+Methods
+
+VARRAY | ARRAY | VARYING ARRAY
+
+count
+first
+prior 
+next
+extend
+last 
+exists
+delete 
+trim
+limit   ONLY FOR VARRAY
+
+DECLARE
+TYPE NAME_ARRAY IS   VARRAY(4) OF VARCHAR2(50);
+TYPE NUMBER_ARRAY IS VARRAY(4) OF INTEGER;
+type dyn_array IS    varray(50) OF VARCHAR2(50);
+NAMES NAME_ARRAY;
+NUMBERS NUMBER_ARRAY;
+dyn_array_temp dyn_array:= dyn_array();
+BEGIN
+  NAMES   := NAME_ARRAY('A','B','C','D');
+  NUMBERS := NUMBER_ARRAY(21,32,23,43);
+  
+  FOR i IN 1..NAMES.COUNT
+  LOOP
+    SYS.DBMS_OUTPUT.PUT_LINE(NAMES(i));
+  END LOOP;
+  
+  FOR i IN 1 .. NUMBERS.COUNT
+  LOOP
+    SYS.DBMS_OUTPUT.PUT_LINE(NUMBERS(i));
+  END LOOP;
+  
+  FOR i IN 1 .. 4
+  LOOP
+    dyn_array_temp.extend(1);
+    dyn_array_temp(i):='A'||i;
+  END LOOP;
+  
+  FOR i IN 1 .. dyn_array_temp.count
+  LOOP
+    dbms_output.put_line(dyn_array_temp(i));
+  END LOOP;
+END;
+/
+========================================================
+PL/SQL RECORD
+
+Table-based
+Cursor-based records
+User-defined records
+
+DECLARE
+  EMPLOYEE_DATA_rec EMPLOYEE_DATA%rowtype;
+BEGIN
+  SELECT * INTO EMPLOYEE_DATA_rec FROM EMPLOYEE_DATA WHERE EMP_ID=574692;
+  DBMS_OUTPUT.PUT_LINE('EMP_ID:='||EMPLOYEE_DATA_rec.EMP_ID);
+END;
+/
+-----------------------------------------------------------------------------------------------------------------------------
+Cursor With RECORD
+Table Based Record
+
+DECLARE
+TYPE sales_order_rec IS RECORD(ITEM_TYPE sales_order.ITEM_TYPE%TYPE,SALES_CHANNEL sales_order.SALES_CHANNEL%TYPE);
+TYPE sales_order_rec_tbl IS TABLE OF sales_order_rec INDEX BY BINARY_INTEGER;
+rec_tbl_temp     sales_order_rec_tbl;  -- Table Based Record
+CURSOR type_channel_cur IS select ITEM_TYPE,SALES_CHANNEL from sales_order where country = 'South Africa' fetch first 100 row only;
+begin
+ OPEN type_channel_cur;
+        LOOP
+            FETCH type_channel_cur BULK COLLECT INTO rec_tbl_temp;
+            EXIT WHEN type_channel_cur%NOTFOUND;
+        END LOOP;
+    CLOSE type_channel_cur;    
+    FOR i IN rec_tbl_temp.FIRST..rec_tbl_temp.LAST
+    LOOP
+     dbms_output.put_line( 'ITEM_TYPE:=' || rec_tbl_temp(i).ITEM_TYPE|| '==SALES_CHANNEL:= '|| rec_tbl_temp(i).SALES_CHANNEL);
+    END LOOP;
+end;
+/
+------------------------------------------------------------------------------------------------------------------------------
+Cursor Based Record
+
+DECLARE
+TYPE sales_order_rec IS RECORD(ITEM_TYPE sales_order.ITEM_TYPE%TYPE,SALES_CHANNEL sales_order.SALES_CHANNEL%TYPE);
+TYPE sales_order_rec_tbl IS TABLE OF sales_order_rec INDEX BY BINARY_INTEGER;
+rec_tbl_temp     sales_order_rec_tbl;
+CURSOR type_channel_cur IS select ITEM_TYPE,SALES_CHANNEL from sales_order where country = 'South Africa' fetch first 100 row only;
+emp_rec    type_channel_cur%ROWTYPE;  --Cursor Based Record
+begin
+ OPEN type_channel_cur;
+        LOOP
+            FETCH type_channel_cur BULK COLLECT INTO rec_tbl_temp;
+            EXIT WHEN type_channel_cur%NOTFOUND;
+        END LOOP;
+    CLOSE type_channel_cur;    
+    FOR i IN rec_tbl_temp.FIRST..rec_tbl_temp.FIRST
+    LOOP
+     dbms_output.put_line( 'ITEM_TYPE:=' || rec_tbl_temp(i).ITEM_TYPE|| '==SALES_CHANNEL:= '|| rec_tbl_temp(i).SALES_CHANNEL);
+    END LOOP;
+    
+    OPEN type_channel_cur;
+        LOOP
+            FETCH type_channel_cur INTO emp_rec;
+                dbms_output.put_line( 'ITEM_TYPE:=' || emp_rec.ITEM_TYPE|| '==SALES_CHANNEL:= '|| emp_rec.SALES_CHANNEL);
+            EXIT WHEN type_channel_cur%NOTFOUND;
+        END LOOP;
+    CLOSE type_channel_cur;  
+    
+end;
+/
+
+------------------------------------------------------------------------------------------------------
+
+USER Defined Record With Multiple Values
+
+DECLARE
+TYPE sales_order_rec IS RECORD(ITEM_TYPE sales_order.ITEM_TYPE%TYPE,SALES_CHANNEL sales_order.SALES_CHANNEL%TYPE);
+TYPE sales_order_rec_tbl IS TABLE OF sales_order_rec INDEX BY BINARY_INTEGER;
+rec_tbl_temp     sales_order_rec_tbl;
+begin
+rec_tbl_temp(1).ITEM_TYPE := 'Hari';
+rec_tbl_temp(1).SALES_CHANNEL := 'ABC';
+
+rec_tbl_temp(2).ITEM_TYPE := 'Reddy';
+rec_tbl_temp(2).SALES_CHANNEL := 'XYZ';
+
+rec_tbl_temp(3).ITEM_TYPE := 'Mouni';
+rec_tbl_temp(3).SALES_CHANNEL := 'PDC';
+
+FOR i IN 1 .. rec_tbl_temp.LAST 
+LOOP
+    dbms_output.put_line(rec_tbl_temp(i).ITEM_TYPE ||'====' ||rec_tbl_temp(i).SALES_CHANNEL);
+  END LOOP;
+end;
+/
+
+----------------------------------------------------------------------------------
+
+set verify off
+accept cc prompt 'Enter the country code: '
+DECLARE
+TYPE country_type IS RECORD (iso_code VARCHAR2(5),name VARCHAR2(50));
+TYPE country_tab IS TABLE OF country_type INDEX BY BINARY_INTEGER;
+t_country country_tab;
+BEGIN
+t_country(1).iso_code := 'UK';
+t_country(1).name := 'United Kingdom';
+t_country(2).iso_code := 'US';
+t_country(2).name := 'United States of America';
+t_country(3).iso_code := 'FR';
+t_country(3).name := 'France';
+t_country(4).iso_code := 'DE';
+t_country(4).name := 'Germany';
+
+FOR i IN 1 .. 4 LOOP
+IF t_country(i).iso_code = upper('&cc') THEN
+DBMS_OUTPUT.PUT_LINE('ISO code "&cc" = ' || t_country(i).name);
+END IF;
+END LOOP;
+END;
+/
+
+==============================================================================================================================================
+PL/SQL TABLE | ASSOCIATIVE ARRAY | NESTED TABLE | INDEX BY TABLE  (VARCHAR2 | PLS_INTEGER | BINARY_INTEGER)
+
+DECLARE
+    TYPE associative_Str IS TABLE OF VARCHAR2(100) INDEX BY VARCHAR2(50);
+    str_ass_temp associative_Str;
+    TYPE associative_num IS TABLE OF VARCHAR2(100) INDEX BY BINARY_INTEGER;
+    num_ass_temp associative_num;
+BEGIN
+    str_ass_temp('USA')            := 'Washington, D.C.';
+    str_ass_temp('United Kingdom') := 'London';
+    str_ass_temp('Japan')          := 'Tokyo';    
+    num_ass_temp(1) := 'ATP';
+    num_ass_temp(2) := 'PTP';
+    num_ass_temp(3) := 'KDR';    
+    DBMS_OUTPUT.PUT_LINE(str_ass_temp('USA'));    
+    FOR I IN num_ass_temp.FIRST .. num_ass_temp.LAST
+    LOOP
+    DBMS_OUTPUT.PUT_LINE(num_ass_temp(I));
+    END LOOP;
+END;
+/
+===============================================================================================================================================
+Nested Table and VARRAY
+
+TYPE VARRAY_DEMO IS VARRAY(3) OF VARCHAR2(10);
+VARRAY_DEMO_TEMP VARRAY_DEMO := VARRAY_DEMO(NULL,NULL,NULL);  OR VARRAY_DEMO_TEMP.EXTEND(3);  THREE MEMORY LOCATIONS WILL ALLOCATE
+
+TYPE NESTED_TABLE_DEMO IS TABLE OF VARCHAR2(10);
+NESTED_TABLE_DEMO_TEMP NESTED_TABLE_DEMO := NESTED_TABLE_DEMO(NULL,NULL,NULL);
+
+VARRAY EXTEND METHOD WILL EXTEND UPTO MAXIMUM LIMIT OF ARRAY SIZE
+NESTED TABLE EXTEND METHOD UNLIMITED
+EXTEND(1); ONE MEMORY LOCATION WILL EXTEND
+NESTED_TABLE_DEMO_TEMP.EXTEND(1);
+
+LIMIT ONLY FOR VARRAY
+
+ASSOCIATIVE ARRAY KEY VALUE PAIRS
+ALL Collections in Single Function
+
+=====================================================================================================================
+
+
+DECLARE
+TYPE VARRAY_DEMO IS VARRAY(5) OF VARCHAR2(10);
+VARRAY_TEMP VARRAY_DEMO := VARRAY_DEMO();
+
+TYPE NESTED_TBL_DEMO IS TABLE OF VARCHAR2(10);
+NESTED_TBL_TEMP NESTED_TBL_DEMO := NESTED_TBL_DEMO();
+
+TYPE ASS_ARR_DEMO IS TABLE OF NUMBER INDEX BY VARCHAR2(10);
+ASS_ARR_TEMP ASS_ARR_DEMO;
+
+TYPE sales_order_rec IS RECORD(ITEM_TYPE sales_order.ITEM_TYPE%TYPE,SALES_CHANNEL sales_order.SALES_CHANNEL%TYPE);
+TYPE sales_order_rec_tbl IS TABLE OF sales_order_rec INDEX BY BINARY_INTEGER;
+rec_tbl_temp     sales_order_rec_tbl;
+BEGIN
+VARRAY_TEMP.EXTEND(5);
+VARRAY_TEMP(1) := 'A';
+VARRAY_TEMP(2) := 'B';
+VARRAY_TEMP(3) := 'D';
+VARRAY_TEMP(4) := 'C';
+VARRAY_TEMP(5) := 'H';
+
+FOR i IN VARRAY_TEMP.FIRST .. VARRAY_TEMP.LAST
+LOOP
+dbms_output.put_line('VARRAY EXAMPLE:='||VARRAY_TEMP(i));
+NESTED_TBL_TEMP.extend(1);
+NESTED_TBL_TEMP(i) := VARRAY_TEMP(i);
+END LOOP;
+
+for i in NESTED_TBL_TEMP.FIRST .. NESTED_TBL_TEMP.LAST
+LOOP
+dbms_output.put_line('NESTED_TBL_TEMP EXAMPLE:='||NESTED_TBL_TEMP(i));
+END LOOP;
+
+ASS_ARR_TEMP('SUN') := 0;
+ASS_ARR_TEMP('MON') := 1;
+ASS_ARR_TEMP('TUE') := 2;
+ASS_ARR_TEMP('WED') := 3;
+
+dbms_output.put_line('ASSOCIATIVE ARRAY EXAMPLE KEY:='||ASS_ARR_TEMP('TUE'));
+
+FOR i IN 1 .. 4
+LOOP
+rec_tbl_temp(i).ITEM_TYPE := 'Hari'||i;
+rec_tbl_temp(i).SALES_CHANNEL := 'ABC'||i;
+END LOOP;
+
+FOR i IN 1 .. rec_tbl_temp.LAST 
+LOOP
+    dbms_output.put_line('RECORD TYPE EXAMPLE :='||rec_tbl_temp(i).ITEM_TYPE ||'====' ||rec_tbl_temp(i).SALES_CHANNEL);
+  END LOOP;
+END;
+/
+
+=====================================================================================================================
+
+
+UNION
+UNION DISTINCT
+INTERSECT
+INTERSECT DISTINCT
+EXCEPT
+EXCEPT DISTINCT
+----------------------------------------

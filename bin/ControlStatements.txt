@@ -1,0 +1,103 @@
+PL/SQL - Loops
+
+Conditional
+Iterative
+Sequential
+=====================================================================================
+Conditional
+Simple If
+If-ELSE
+IF-ELSEIF-ELSE
+NESTED-IF
+NESTED-IFELSE
+------------------------------------------------------------------------------------
+clear screen;
+SET SERVEROUTPUT ON;
+DECLARE
+  i     INT := &val;
+  grade CHAR(1) := &grd;
+BEGIN
+  IF i>10 AND i <20 THEN
+    SYS.DBMS_OUTPUT.PUT_LINE('Between 10 and 20:='||i);
+  ELSE
+    SYS.DBMS_OUTPUT.PUT_LINE('Greater Than 20:='||i);
+  END IF;
+  
+  IF i>10 AND i <20 THEN
+    SYS.DBMS_OUTPUT.PUT_LINE('Between 10 and 20:='||i);
+  ELSif i>30 AND i <40 THEN
+    SYS.DBMS_OUTPUT.PUT_LINE('Between 30 and 200:='||i);
+  ELSif i>40 AND i <200 THEN
+    SYS.DBMS_OUTPUT.PUT_LINE('Between 40 and 200:='||i);
+  END IF;
+  
+  CASE grade
+  WHEN 'A' THEN
+    dbms_output.put_line('Excellent');
+  WHEN 'F' THEN
+    dbms_output.put_line('Better try again');
+  ELSE
+    dbms_output.put_line('No such grade');
+  END CASE;
+  
+  IF( i   > 50 ) THEN
+    IF( i > 75 ) THEN
+      dbms_output.put_line('Value of a is 100 and b is 200' );
+    END IF;
+  END IF;
+END;
+/
+=====================================================================================
+Iterative
+
+clear screen;
+set SERVEROUTPUT ON;
+DECLARE
+  i INT;
+BEGIN
+  i :=1;
+  LOOP
+    DBMS_OUTPUT.PUT_LINE('Simple Loop:='||i);
+    i := i+1;
+    EXIT
+  WHEN i>10;
+  END LOOP;
+END;
+/
+----------------------------------------------------------------------------------
+DECLARE
+BEGIN
+  for i in 1 .. 10
+  LOOP
+    DBMS_OUTPUT.PUT_LINE('For Loop:='||i);
+	exit when i >= 5;
+  END LOOP;
+END;
+/
+----------------------------------------------------------------------------------
+DECLARE
+  i INT;
+BEGIN
+i := 1;
+ while i <= 10
+  LOOP
+    DBMS_OUTPUT.PUT_LINE('While Loop:='||i);
+    i := i+1;
+  END LOOP;
+END;
+/
+-----------------------------------------------------------------------------------
+Nested For Loop
+
+DECLARE
+BEGIN
+  FOR i IN 1 .. 10
+  LOOP
+    FOR j IN 1 .. 5
+    LOOP
+      DBMS_OUTPUT.PUT_LINE('Nested For Loop:='||i);
+    END LOOP;
+  END LOOP;
+END;
+/
+=============================================================

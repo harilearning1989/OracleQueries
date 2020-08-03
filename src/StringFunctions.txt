@@ -1,0 +1,46 @@
+Oracle string functions
+ASCII		The ASCII function returns the decimal representation in the database character set of the first character of char. Example: ASCII('b') =98
+CHR			The CHR function returns the character having the binary equivalent to n as a VARCHAR2 value in either the database character set. 
+			Example: CHR(10)||CHR(13) = carriage return plus line feed.
+COALESCE	The COALESCE function returns the first non-null expr in the expression list. At least one expr must not be the literal NULL. 
+			If all occurrences of expr evaluate to null, then the function returns null. Example: select COALESCE(col1, col2, col3) FROM emp;
+CONCAT		The CONCAT function returns the concatenation of 2 strings. You can also use the || command for this. Example: CONCAT('abc','def') = 'abcdef'
+CONVERT		The CONVERT function converts a string from one characterset to another. The datatype of the returned value is VARCHAR2. 
+			Example: CONVERT('This is an example','UTF-8','WE8ISO8859P1') SELECT CONVERT('� � � � � A B C D E ', 'US7ASCII', 'WE8ISO8859P1') FROM DUAL; = A E I ? ? A B C D E ?
+DUMP		The DUMP function returns a VARCHAR2 value containing the datatype code, length in bytes, and internal representation of expr. 
+			The returned result is always in the database character set.
+INSTR		Returns the position of a String within a String. For more information see Oracle instr function
+INITCAP		Transform String to init cap Example: INITCAP('ORADEV') = 'Oradev'
+INSTRB		Returns the position of a String within a String, expressed in bytes.
+INSTRC		Returns the position of a String within a String, expressed in Unicode complete characters
+INSTR2		Returns the position of a String within a String, expressed in UCS2 code points
+INSTR4		Returns the position of a String within a String, expressed in UCS4 code points
+LENGTH		The LENGTH functions returns the length of char. LENGTH calculates length using characters as defined by the input character set. Example: length('oradev.com') = 10
+LENGTHB		Returns the length of a string, expressed in bytes.
+LOWER		The LOWER function returns a string with all lower case characters. Example: LOWER('ORADEV') = 'oradev'
+LPAD		Add characters to the left of a string until a fixed number is reached. Example: lpad('abc',8,'x') = 'xxxxxabc'. 
+			If the last parameter is not specified, spaces are added to the left.
+LTRIM		LTRIM removed characters from the left of a string if they are equal to the specified string.
+			Example: ltrim('aaaaaabc','a') = 'bc' If the last parameter is not specified, spaces are removed from the left side.
+REPLACE		The replace function replaces every occurrence of a search_string with a new string.
+			If no new string is specified, all occurrences of the search_string are removed. Example: replace('a1a1a1','a','2') = '212121'.
+REVERSE		Reverses the characters of a String. Example: REVERSE('oradev.com') = 'moc.vedaro'
+RPAD		Add characters to the right of a string until a fixed number is reached. Example: rpad('abc',8,'x') = 'abcxxxxx'. 
+			If the last parameter is not specified, spaces are added to the right.
+RTRIM		RTRIM removed characters from the right of a string if they are equal to the specified string. 
+			Example: rtrim('bcaaaaaa','a') = 'bc' If the last parameter is not specified, spaces are removed from the right side.
+SOUNDEX		SOUNDEX returns a character string containing the phonetic representation of char. 
+			This function lets you compare words that are spelled differently, but sound alike in English. Example: select * from emp where lastname SOUNDEX('SMITH');
+SUBSTR		Returns a substring. For more information see Oracle substring
+SUBSTRB		Returns a substring expressed in bytes instead of characters.
+SUBSTRC		Returns a substring expressed in Unicode code points instead of characters.
+SUBSTR2		Returns a substring using USC2 code points.
+SUBSTR4		Returns a substring using USC4 code points.
+TRANSLATE	TRANSLATE returns expr with all occurrences of each character in from_string replaced by its corresponding character in to_string. 
+			Characters in expr that are not in from_string are not replaced. 
+			Example: SELECT TRANSLATE('SQL*Plus User''s Guide', ' */''', '___') FROM DUAL; = 'SQL_Plus_Users_Guide'
+TRIM		The TRIM function trims specified characters from the left and/or right. 
+			If no characters are specified, the left and right spaces are left out. Example: trim(' Oradev dot com ') = 'Oradev dot com'.
+			|| (pipes)	With pipes you can concattenate strings. Example 'Oradev'||'.com' = 'Oradev.com'.
+UPPER		Transform a string to all upper case characters. Example: UPPER('oradev') = 'ORADEV'
+VSIZE		The VSIZE function returns the byte size of a String.

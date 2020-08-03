@@ -1,0 +1,17 @@
+PL/SQL - Operators
+
+Arithmetic operators
+Relational operators
+Comparison operators
+Logical operators
+String operators
+
+=================================================
++,-,*,/,POWER(9,2)          Arithmetic
+=================================================
+=,!=,<,>,<=,>=				Relational
+===================================================
+like,in,between,is null		Comparison
+==================================================
+and,or,not					Logical
+==================================================

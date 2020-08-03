@@ -1,0 +1,23 @@
+Object
+
+CREATE OR REPLACE TYPE API_CALL_OBJ AS OBJECT(WORST_TIME number,NUMBER_OF_CALLS number,SEARCH_ID varchar(40),AVG_TIME_TAKEN number,URL_STR VARCHAR2(4000 BYTE));
+create OR REPLACE TYPE API_CALL_OBJ_TBL IS TABLE OF API_CALL_OBJ;
+
+--First Table Query
+
+create or replace function audit_Perf_search_id_func (start_time_in in varchar2,end_time_in in  varchar2)
+return API_CALL_OBJ_TBL
+IS    
+  all_obj  API_CALL_OBJ_TBL := API_CALL_OBJ_TBL();   
+BEGIN
+    all_obj.extend;
+    all_obj(all_obj.last) := API_CALL_OBJ(WORST_TIME,NUMBER_OF_CALLS,'',AVG_TIME_TAKEN,''); 
+ -- return all_obj;
+EXCEPTION
+WHEN OTHERS THEN
+  dbms_output.put_line( SQLERRM );
+--return null;
+END audit_Perf_search_id_func;
+
+
+

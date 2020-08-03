@@ -1,0 +1,56 @@
+PL/SQL - Cursors
+
+IMPLICIT  AND EXPLICIT
+
+%FOUND, 
+%ISOPEN, 
+%NOTFOUND,  
+%ROWCOUNT
+%BULK_ROWCOUNT 
+%BULK_EXCEPTIONS
+
+DECLARE 
+   c_name customer.name%type; 
+   CURSOR c_customers is 				--Declaring
+      SELECT name FROM customers;   
+BEGIN 
+   OPEN c_customers; 					--Open
+   LOOP 
+   FETCH c_customers into c_name; 		--Fetch
+      EXIT WHEN c_customers%notfound; 
+      dbms_output.put_line(c_name); 
+   END LOOP; 
+   CLOSE c_customers; 					--Close
+END; 
+/
+
+=============================================================================
+SYS REFCURSOR Function
+
+CREATE OR REPLACE FUNCTION get_direct_reports(
+      in_manager_id IN employees.manager_id%TYPE)
+   RETURN SYS_REFCURSOR
+AS
+   c_direct_reports SYS_REFCURSOR;
+BEGIN
+   OPEN c_direct_reports FOR 
+   SELECT employee_id FROM employees WHERE manager_id = in_manager_id;
+   RETURN c_direct_reports;
+END;
+-------------------------------------------------------------------------
+SYS REFCURSOR Procedure
+
+CREATE OR REPLACE PROCEDURE emp_by_dept (p_deptno emp.deptno%TYPE)
+IS
+    emp_refcur      SYS_REFCURSOR;
+    v_ename         emp.ename%TYPE;
+BEGIN
+    OPEN emp_refcur FOR SELECT ename FROM emp WHERE deptno = p_deptno;
+     LOOP
+        FETCH emp_refcur INTO v_ename;
+        EXIT WHEN emp_refcur%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE(v_ename);
+    END LOOP;
+    CLOSE emp_refcur;
+END;
+===========================================================================

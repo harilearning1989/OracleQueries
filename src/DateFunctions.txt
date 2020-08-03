@@ -1,0 +1,102 @@
+http://www.baskent.edu.tr/~tkaracay/etudio/ders/dbase/sql/pdfSQL/DateFunctions.pdf
+
+SELECT sysdate,SYSTIMESTAMP,CAST(SYSTIMESTAMP AS DATE) timedate,
+EXTRACT( YEAR FROM TO_DATE( '31-DEC-1999 15:30:20 ','DD-Mon-YYYY HH24:MI:SS' ) ) YEAR,
+EXTRACT( MONTH FROM TO_DATE( '31-DEC-1999 15:30:20 ','DD-Mon-YYYY HH24:MI:SS' ) ) month,
+EXTRACT( day FROM TO_DATE( '31-DEC-1999 15:30:20 ','DD-Mon-YYYY HH24:MI:SS' ) ) day,
+to_char(TO_DATE( '31-DEC-1999 15:30:20 ','DD-Mon-YYYY HH24:MI:SS' ),'HH12' ) hours,
+to_char(TO_DATE( '31-DEC-1999 15:30:20 ','DD-Mon-YYYY HH24:MI:SS' ),'MI' ) minutes,
+to_char(TO_DATE( '31-DEC-1999 15:30:20 ','DD-Mon-YYYY HH24:MI:SS' ),'SS' ) seconds FROM DUAL;
+
+select sysdate,add_months(sysdate,24),NEXT_DAY(DATE '2020-07-03','SUNDAY'),trunc(MONTHS_BETWEEN(sysdate,DATE '2017-01-01')/12) MONTH_DIFF,
+to_date(20072020,'ddmmyyyy') date1,TO_DATE('July 03,2020','MONTH DD,YYYY') date2,to_date(200325,'yymmdd') date3,TO_CHAR(sysdate,'FMMonth DD,YYYY') date4,
+to_char(sysdate,'dd-mm-yyyy') date5,
+SYSTIMESTAMP,current_date,CURRENT_TIMESTAMP,DBTIMEZONE,FROM_TZ(TIMESTAMP '2020-07-23 08:09:10', '-09:00'),LAST_DAY(SYSDATE) from DUAL;
+
+EXTRACT( { { YEAR
+           | MONTH
+           | DAY
+           | HOUR
+           | MINUTE
+           | SECOND
+           }
+         | { TIMEZONE_HOUR
+           | TIMEZONE_MINUTE
+           }
+         | { TIMEZONE_REGION
+           | TIMEZONE_ABBR
+           }
+         }
+         FROM { expr }
+       )
+
+	   
+	 select sysdate,
+extract(year from sysdate) year,
+extract(month from sysdate) month,
+extract(day from sysdate) day,
+extract(hour from cast(to_char(sysdate,'DD-MON-YYYY HH:MI:SS') as timestamp)) hour,
+extract(minute from cast(to_char(sysdate,'DD-MON-YYYY HH:MI:SS') as timestamp)) minute,
+extract(second from cast(to_char(sysdate,'DD-MON-YYYY HH:MI:SS') as timestamp)) second,
+TO_CHAR(ADD_MONTHS(sysdate, 12), 'DD-MON-YYYY HH:MI:SS') next_year,
+TO_NUMBER(TO_CHAR(sysdate, 'DDMMYYYYHHMISS')) DATE_TO_NUMBER,
+CURRENT_DATE CUR_DATE,
+CURRENT_TIMESTAMP CUR_DATE_TIME,
+TRUNC(MONTHS_BETWEEN(TO_DATE('Jun-02-2015','Mon-DD-YYYY'),TO_DATE('Jun-01-2014','Mon-DD-YYYY'))) DIFF_MONTHS,
+TRUNC(MONTHS_BETWEEN(TO_DATE('Jun-02-2015','Mon-DD-YYYY'),TO_DATE('Jun-01-2014','Mon-DD-YYYY')))/12 years,
+TO_TIMESTAMP ('21-mar-15 11:20:10.123000','DD-Mon-RR HH24:MI:SS.FF') time_stamp,
+to_char(sysdate,'DAY') day,to_char(sysdate,'MONTH') MON,to_char(sysdate,'YEAR') YEA,to_char(sysdate,'D') DAY,to_char(sysdate,'DD') DAY,
+to_char(sysdate,'HH') HR,to_char(sysdate,'MI') MI,to_char(sysdate,'SS') SS,
+sysdate-to_date('15-Jun-2019','dd-MOn-yyyy') total_days,
+sysdate+365 after_one_year,
+trunc((sysdate-to_date('01-Jul-2020 21:30:30','dd-MOn-yyyy HH24:MI:SS'))*24*60*60*1000)
+from dual;  
+
+=======================================================================================================
+Subtract two Dates
+
+select to_date('01-07-2018 04:12:56','DD-MM-YYYY HH24:MI:SS') last_date,to_date('03-02-2007 04:12:56','DD-MM-YYYY HH24:MI:SS') first_date,
+(to_date('01-07-2018 04:12:56','DD-MM-YYYY HH24:MI:SS') - to_date('03-02-2007 04:12:56','DD-MM-YYYY HH24:MI:SS')) date_diff,
+substr((4166/365),1,10) year_diff,(4166*24) hour_diff
+from dual;
+
+================================================================================================
+
+Qury Execution TIMESTAMP
+
+CREATE OR REPLACE PROCEDURE proc_time
+AS
+  v        NUMBER := 1;
+  x        NUMBER := 0;
+  counter  NUMBER := 0;
+  summ     NUMBER;
+  ex_start NUMBER;
+  ex_end   NUMBER;
+  ex_time  NUMBER;
+BEGIN
+  ex_start := dbms_utility.get_time;
+  dbms_output.put_line('start time ==>'||NVL(ex_start,0));
+  WHILE counter <= 190000
+  LOOP
+    counter := counter + 1;
+    summ    := x       +v;
+    x       := v;
+    V       := summ;
+    --        dbms_output.put_line('Fibonacci nr'||counter||': '||summ);
+  END LOOP;
+  ex_end := DBMS_UTILITY.GET_TIME;
+  dbms_output.put_line('End time ==>'||ex_end);
+  ex_time := (ex_end-ex_start);
+  DBMS_OUTPUT.PUT_LINE( 'Exekveringstid: ' || ex_time || ' sekunder.' );
+END;
+
+set serveroutput on;
+exec proc_time;
+===================================================================================================
+
+select to_date('01-07-2018 04:12:56','DD-MM-YYYY HH24:MI:SS') last_date,to_date('03-02-2007 04:12:56','DD-MM-YYYY HH24:MI:SS') first_date,
+(to_date('01-07-2018 04:12:56','DD-MM-YYYY HH24:MI:SS') - to_date('03-02-2007 04:12:56','DD-MM-YYYY HH24:MI:SS')) date_diff,
+substr((4166/365),1,10) year_diff,(4166*24) hour_diff,dbms_utility.get_time,LOCALTIMESTAMP 
+from dual;
+
+==================================================================================================
