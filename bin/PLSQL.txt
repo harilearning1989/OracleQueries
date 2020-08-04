@@ -1,0 +1,439 @@
+Oracle 12C
+
+sqlplus system
+dudkrish1A
+
+localhost
+1521
+SID orcl
+
+Available Assessments
+Microservices,Restful and Spring Boot (Advanced)
+This assessment has already been completed. You can retake this assessment on: Feb 27, 2020
+
+https://www.youtube.com/watch?v=WDnLDCKe7YI&list=PLd3UqWTnYXOnQ5a990TUv7FJVzB2M7h2O&index=12
+
+https://localhost:5500/em
+sys dudkrish1A
+
+PL/SQL Tutorial
+
+PL/SQL - Operators				 Done
+PL/SQL - Conditions				 Done
+PL/SQL - Loops                   Done
+PL/SQL - Strings				 DOne
+PL/SQL - Collections			 DOne
+PL/SQL - Arrays					 DOne
+PL/SQL - Records  				 DOne
+PL/SQL - Procedures
+PL/SQL - Functions
+PL/SQL - Cursors             	 Done
+PL/SQL - Exceptions				 Done
+PL/SQL - Triggers
+PL/SQL - Packages
+PL/SQL - Transactions
+PL/SQL - Date & Time			Done
+PL/SQL - DBMS Output
+PL/SQL - Object Oriented
+
+https://www.youtube.com/watch?v=MCjX_c0KziQ
+
+1. DETERMINISTIC CLAUSE
+2. RESTRICT_REFERENCE
+3. PARALLEL_ENABLE
+4. PIPELINED 
+5. RESULT_CACHE WITH RELAY
+
+================================================================================
+
+Normal Cursor
+
+clear screen;
+SET SERVEROUTPUT ON SIZE 100000;
+DECLARE 
+  CURSOR country_cursor IS SELECT DISTINCT COUNTY as COuntry FROM EMPLOYEE_DATA;
+  country_temp EMPLOYEE_DATA.COUNTY%TYPE;
+BEGIN 
+   OPEN country_cursor; 
+   LOOP 
+   FETCH country_cursor into country_temp; 
+      EXIT WHEN country_cursor%notfound; 
+      dbms_output.put_line(country_temp); 
+   END LOOP; 
+   CLOSE country_cursor; 
+END; 
+/
+==============================================================
+
+Passing Array as Input Field
+
+CREATE or replace TYPE arr_type is TABLE of VARCHAR2(100);
+set serveroutput on;
+DECLARE
+  my_array arr_type := arr_type();
+  my_array_two arr_type := arr_type();
+BEGIN 
+  SELECT distinct COUNTRY BULK COLLECT INTO my_array FROM SALES_ORDER;
+  SELECT distinct ITEM_TYPE BULK COLLECT INTO my_array_TWO FROM SALES_ORDER
+  WHERE COUNTRY IN (select * from table(my_array));
+   FOR i IN 1..my_array_TWO.COUNT LOOP
+     DBMS_OUTPUT.PUT_LINE(my_array_TWO(i));
+   END LOOP; 
+END; 
+/
+==================================================
+CREATE or replace TYPE arr_type is TABLE of VARCHAR2(100);
+set serveroutput on;
+DECLARE
+  CURSOR TOTAL_REVENUE_cursor IS 
+  SELECT distinct COUNTRY  FROM SALES_ORDER;
+  my_array arr_type := arr_type();
+  my_array_two arr_type := arr_type();  
+BEGIN   
+ OPEN TOTAL_REVENUE_cursor;
+    FETCH TOTAL_REVENUE_cursor bulk collect INTO my_array;
+    close TOTAL_REVENUE_cursor;  
+  SELECT distinct ITEM_TYPE BULK COLLECT INTO my_array_TWO FROM SALES_ORDER
+  WHERE COUNTRY IN (select * from table(my_array));
+   FOR i IN 1..my_array_TWO.COUNT LOOP
+     DBMS_OUTPUT.PUT_LINE(my_array_TWO(i));
+   END LOOP; 
+END; 
+/
+
+==========================================================================
+
+clear screen;
+SET SERVEROUTPUT ON size unlimited;
+DECLARE
+  CURSOR country_distinct_cursor
+  IS
+    SELECT DISTINCT COUNTRY FROM SALES_ORDER;
+  country_temp SALES_ORDER.COUNTRY%TYPE;
+  ITEM_TYPE_TEMP SALES_ORDER.ITEM_TYPE%TYPE;
+BEGIN
+  OPEN country_distinct_cursor;
+  LOOP
+    FETCH country_distinct_cursor INTO country_temp;
+    EXIT WHEN country_distinct_cursor%NOTFOUND;
+    select ITEM_TYPE into ITEM_TYPE_TEMP from SALES_ORDER where COUNTRY = country_temp order by TOTAL_PROFIT desc fetch first 1 row only;
+    DBMS_OUTPUT.PUT_LINE('ITEM_TYPE_TEMP:='||ITEM_TYPE_TEMP||'===country_temp:=='||country_temp);    
+  END LOOP;
+  close country_distinct_cursor;
+END;
+/
+======================================================================================
+
+clear screen;
+set serveroutput on;
+DECLARE
+  CURSOR country_distinct_cursor IS SELECT DISTINCT COUNTRY FROM SALES_ORDER;
+  my_array arr_type := arr_type();
+  my_array_two arr_type := arr_type();  
+BEGIN   
+ OPEN country_distinct_cursor;
+    FETCH country_distinct_cursor bulk collect INTO my_array;
+    close country_distinct_cursor;  
+    select distinct ITEM_TYPE BULK COLLECT INTO my_array_TWO from SALES_ORDER where COUNTRY IN (select * from table(my_array));
+   FOR i IN 1..my_array_TWO.COUNT LOOP
+     DBMS_OUTPUT.PUT_LINE(my_array_TWO(i));
+   END LOOP; 
+END; 
+/
+================================================================================================
+
+clear screen;
+set SERVEROUTPUT ON;
+DECLARE
+  type sales_order_type IS TABLE OF SALES_ORDER%rowtype;
+  sales_order_type_temp sales_order_type := sales_order_type();
+  v_start_time number;
+BEGIN
+  v_start_time := dbms_utility.get_time;
+  FOR sales_for IN (SELECT * FROM SALES_ORDER where rownum<700000)
+  LOOP
+    sales_order_type_temp.extend;
+    sales_order_type_temp(sales_order_type_temp.last) := sales_for;
+  END LOOP;  
+  DBMS_OUTPUT.PUT_LINE('sales_order_type_temp without Bulk:='||sales_order_type_temp.count||'==time taken=='||(dbms_utility.get_time - v_start_time));
+  
+  v_start_time := dbms_utility.get_time;
+  SELECT * bulk collect INTO sales_order_type_temp FROM SALES_ORDER where rownum<700000;
+  DBMS_OUTPUT.PUT_LINE('sales_order_type_temp with Bulk:='||sales_order_type_temp.count||'==time taken=='||(dbms_utility.get_time - v_start_time));
+END;
+/
+===============================================================================================
+record type
+
+CREATE OR REPLACE type myType AS object (a INT,b VARCHAR2(10));
+create or replace type myTable as table of myType;
+create or replace function f1 return myTable as
+l_data myTable := myTable();
+begin
+for i in 1 .. 5 loop
+l_data.extend;
+l_data(i) := myType(i, 'Row #'||i );
+end loop;
+return l_data;
+end;
+/
+select * from TABLE (f1() );
+
+==========================================================================================================
+
+create table customer (
+   customer_id number(2) primary key,
+   customer_name varchar2(200) );
+CREATE OR REPLACE PACKAGE cursor_not_array IS
+   FUNCTION get_customers(p_max_records INTEGER, p_id_start INTEGER, p_id_end INTEGER DEFAULT NULL) RETURN SYS_REFCURSOR;
+END cursor_not_array;
+
+CREATE OR REPLACE PACKAGE BODY cursor_not_array IS
+   c_max_customer_id CONSTANT NUMBER(2) := 99;
+   FUNCTION get_customers(p_max_records INTEGER, p_id_start INTEGER, p_id_end INTEGER DEFAULT NULL) RETURN SYS_REFCURSOR IS v_result SYS_REFCURSOR;
+   BEGIN
+      OPEN v_result FOR SELECT customer_id,customer_name FROM customer
+          WHERE customer_id BETWEEN p_id_start AND nvl(p_id_end, c_max_customer_id)
+          ORDER BY customer_id;
+      RETURN v_result;
+   END;
+END cursor_not_array;
+select * from customer;
+select cursor_not_array.get_customers(10,1,10) from dual;
+============================================================================================================
+
+select floor(dbms_random.value(1, 10)) from dual;
+select sysdate+floor(dbms_random.value(1, 1000)) from dual;
+select to_date('31-05-1970 04:12:56','DD-MM-YYYY HH24:MI:SS')+floor(dbms_random.value(1, 20000)) from dual;
+SELECT DBMS_RANDOM.STRING('A', 1) FROM DUAL;
+SELECT
+    CASE floor(dbms_random.value(1, 4))
+        WHEN 1   THEN
+            'A'
+        WHEN 2   THEN
+            'R'
+        ELSE
+            'I'
+    END random_char,floor(dbms_random.value(1, 3))
+FROM
+    dual;
+
+------------------------------------------------------------------------------------------------------
+declare
+type states_tbl is Table of employee_history.STATE_AP%TYPE;
+states_tbl_temp states_tbl := states_tbl();
+EMP_STATUS_TEMP employee_info.EMP_STATUS%TYPE;
+
+type rowid_tbl is Table of varchar2(100);
+rowid_tbl_temp rowid_tbl := rowid_tbl();
+
+emp_hist_rec employee_history%rowtype; 
+count_temp int;
+begin
+
+select distinct STATE_AP bulk collect into states_tbl_temp from employee_history;
+select distinct ROWID bulk collect into rowid_tbl_temp from employee_info where DISTRICT is null;
+
+for i in rowid_tbl_temp.first .. rowid_tbl_temp.last
+loop
+SELECT CASE floor(dbms_random.value(1, 4))
+        WHEN 1   THEN
+            'A'
+        WHEN 2   THEN
+            'R'
+        ELSE
+            'I'
+    END random_char into EMP_STATUS_TEMP
+FROM dual;
+
+if i<88087 then
+select * into emp_hist_rec from employee_history where ID=i;
+else
+select * into emp_hist_rec from employee_history where ID=floor(dbms_random.value(1, 88087));
+end if;
+
+update employee_info set 
+EMP_AGE= floor(dbms_random.value(1, 70)),
+DOB=to_date('31-05-1970 04:12:56','DD-MM-YYYY HH24:MI:SS')+floor(dbms_random.value(1, 20000)),
+SALARY = floor(dbms_random.value(10000, 700000)),
+CURRENT_LOCATION=states_tbl_temp(floor(dbms_random.value(1, 35))),
+EMP_STATUS = EMP_STATUS_TEMP,OFFICE_NAME = emp_hist_rec.OFFICE_NAME,
+OFFICE_STATUS=emp_hist_rec.OFFICE_STATUS, PINCODE=emp_hist_rec.PINCODE, TELEPHONE_NO=emp_hist_rec.TELEPHONE_NO, TALUK=emp_hist_rec.TALUK, 
+DISTRICT=emp_hist_rec.DISTRICT, STATE_AP=emp_hist_rec.STATE_AP, POSTAL_DIVISION=emp_hist_rec.POSTAL_DIVISION, 
+POSTAL_REGION=emp_hist_rec.POSTAL_REGION, POSTAL_CIRCLE=emp_hist_rec.POSTAL_CIRCLE where rowid = rowid_tbl_temp(i);
+end loop;
+exception when others then
+dbms_output.put_line('Exception'|| sqlerrm);
+end;
+/
+------------------------------------------------------------------------------------------------
+
+Nested Table With Record type
+
+clear screen;
+set SERVEROUTPUT ON;
+declare
+TYPE books IS RECORD (title varchar(50),author varchar(50)); 
+book1 books; 
+book2 books; 
+type books_tbl is table of books;
+books_tbl_temp books_tbl := books_tbl();
+begin
+book1.title  := 'Hari';
+book2.title := 'Reddy';
+--dbms_output.put_line('book1.title:=' || book1.title);
+books_tbl_temp.extend();
+books_tbl_temp := books_tbl(book1);
+books_tbl_temp.extend();
+books_tbl_temp := books_tbl(book2);
+for i in books_tbl_temp.first .. books_tbl_temp.last
+loop
+book1 := books_tbl_temp(i);
+dbms_output.put_line('books_tbl_temp:=' || book1.title);
+end loop;
+exception when others then
+dbms_output.put_line('Exception:=');
+end;
+/
+
+
+DECLARE 
+   CURSOR c_customers is  
+      SELECT  name FROM customers;  
+   TYPE c_list IS TABLE of customerS.No.ame%type; 
+   name_list c_list := c_list(); 
+   counter integer :=0; 
+BEGIN 
+   FOR n IN c_customers LOOP 
+      counter := counter +1; 
+      name_list.extend; 
+      name_list(counter)  := n.name; 
+      dbms_output.put_line('Customer('||counter||'):'||name_list(counter)); 
+   END LOOP; 
+END; 
+/ 
+
+======================================================================
+
+clear screen;
+set SERVEROUTPUT ON;
+DECLARE
+   TYPE N_TYPE IS TABLE OF VARCHAR2(350);
+   TYPE TYPE1 IS RECORD ( FIELD_1 VARCHAR2(100), FIELD_2 VARCHAR2(30), FIELD_3 N_TYPE);
+   v_n n_type;
+   v_type1 type1;
+   hold_val VARCHAR2(350);
+BEGIN
+   v_n := n_type(); -- initialize an empty collection
+   v_n.extend( 3 ); -- add 3 elements to the table
+   v_n( 1 ) := 'First string ';
+   v_n( 2 ) := 'Second string ';
+   v_n( 3 ) := 'Third string ';
+   v_n.extend; -- add 1 element at the end of the table
+   v_n( v_n.last ) := 'Next string';
+
+   --assign the table to the field_3 of the record
+   v_type1.field_3 := v_n;
+
+   -- check values
+   FOR i in v_type1.field_3.first .. v_type1.field_3.last LOOP
+   hold_val := v_type1.field_3( i );
+      DBMS_OUTPUT.PUT_LINE('hold_val:='||hold_val);
+   END LOOP;
+END;
+/
+
+======================================================================================
+
+clear screen;
+set serveroutput on;
+declare
+TYPE state_ap_tpl IS TABLE OF employee_info.state_ap%type;
+state_ap_tmp state_ap_tpl := state_ap_tpl();
+TYPE emp_rec IS RECORD(EMP_NAME_REC employee_info.EMP_NAME%TYPE,CATEGORY_REC employee_info.CATEGORY%TYPE,MOBILE_REC employee_info.MOBILE%TYPE);
+--emp_rec_tmp emp_rec;
+TYPE emp_rec_type IS TABLE OF emp_rec;
+emp_rec_type_tmp emp_rec_type;
+
+TYPE emp_all_type IS TABLE OF emp_rec;
+emp_all_tmp emp_all_type := emp_all_type();
+
+BEGIN
+SELECT DISTINCT state_ap BULK COLLECT INTO state_ap_tmp FROM employee_info;
+
+FOR i IN state_ap_tmp.FIRST .. state_ap_tmp.LAST LOOP
+SELECT EMP_NAME, CATEGORY, MOBILE BULK COLLECT INTO emp_rec_type_tmp FROM employee_info where state_ap = state_ap_tmp(i);
+--DBMS_OUTPUT.PUT_LINE('emp_rec_type_tmp:='||emp_rec_type_tmp.count||'==state_ap_tmp:='||state_ap_tmp(i));
+
+for i in emp_rec_type_tmp.first .. emp_rec_type_tmp.last loop
+    --DBMS_OUTPUT.PUT_LINE('emp_rec_type_tmp:=' || emp_rec_type_tmp(i).MOBILE_REC);
+    emp_all_tmp.extend();
+    emp_all_tmp(emp_all_tmp.last) := emp_rec_type_tmp(i);
+end loop;
+END LOOP;
+DBMS_OUTPUT.PUT_LINE('emp_all_tmp===:'||emp_all_tmp.COUNT);
+--for i in emp_rec_type_tmp.first .. emp_rec_type_tmp.last loop
+--DBMS_OUTPUT.PUT_LINE('emp_rec_type_tmp:=' || emp_rec_type_tmp(i).MOBILE_REC);
+--end loop;
+--DBMS_OUTPUT.PUT_LINE('emp_rec_type_tmp:=' || emp_rec_type_tmp.count);
+EXCEPTION WHEN OTHERS THEN
+DBMS_OUTPUT.PUT_LINE('EXCEPTION:='||SQLERRM);
+END;
+/
+================================================================================================
+
+WITH cte AS (
+    SELECT STATE_AP, SALARY,emp_age,
+        RANK() OVER (ORDER BY SALARY) rnk_min,
+        RANK() OVER (ORDER BY SALARY DESC) rnk_max
+    FROM employee_info where STATE_AP ='PUNJAB' and 
+    DOB > TO_DATE ('01-06-1970 04:12:56', 'DD-MM-YYYY HH24:MI:SS') and dob<= TO_DATE ('02-03-2025 04:12:56', 'DD-MM-YYYY HH24:MI:SS')
+)
+SELECT STATE_AP, SALARY,emp_age
+FROM cte
+WHERE rnk_min = 1 OR rnk_max = 1
+ORDER BY SALARY;
+
+===============================================================================================
+
+clear screen;
+set SERVEROUTPUT ON;
+declare
+TYPE states_type IS TABLE OF employee_info.STATE_AP%TYPE;
+states_type_tmp states_type;
+TYPE TOTAL_REC IS RECORD(STATE_AP employee_info.STATE_AP%TYPE,SALARY employee_info.SALARY%TYPE);
+TYPE TOTAL_REC_TBL IS TABLE OF TOTAL_REC;
+TOTAL_TBL_TMP TOTAL_REC_TBL;
+
+start_date varchar2(20);
+end_date varchar2(20);
+begin
+start_date := '01-06-1970 04:12:56';
+end_date := '02-03-2025 04:12:56';
+
+select distinct STATE_AP bulk collect into states_type_tmp from employee_info 
+where DOB > TO_DATE (start_date, 'DD-MM-YYYY HH24:MI:SS') and dob<= TO_DATE (end_date, 'DD-MM-YYYY HH24:MI:SS');
+for i in states_type_tmp.first .. states_type_tmp.last loop
+
+WITH cte AS (SELECT STATE_AP, SALARY,emp_age,RANK() OVER (ORDER BY SALARY) rnk_min,
+        RANK() OVER (ORDER BY SALARY DESC) rnk_max FROM employee_info where STATE_AP = states_type_tmp(i) and 
+        DOB > TO_DATE (start_date, 'DD-MM-YYYY HH24:MI:SS') and dob<= TO_DATE (end_date, 'DD-MM-YYYY HH24:MI:SS'))
+SELECT STATE_AP,SALARY BULK COLLECT into TOTAL_TBL_TMP FROM cte WHERE rnk_min = 1 OR rnk_max = 1 ORDER BY SALARY;
+
+dbms_output.put_line('TOTAL_TBL_TMP:='||TOTAL_TBL_TMP.COUNT||'==states_type_tmp:='||states_type_tmp(i));
+end loop;
+exception when others then 
+dbms_output.put_line('sqlerrm:='||sqlerrm||'==sqlcode:='||sqlcode);
+end;
+/
+==========================================================================================
+
+SET DEFINE OFF
+WITH cte AS (SELECT STATE_AP, SALARY,emp_age,RANK() OVER (ORDER BY SALARY) rnk_min,
+        RANK() OVER (ORDER BY SALARY DESC) rnk_max FROM employee_info 
+        where STATE_AP = 'DADRA & NAGAR HAVELI' 
+        and DOB > TO_DATE ('01-06-1970 04:12:56', 'DD-MM-YYYY HH24:MI:SS') 
+        and dob<= TO_DATE ('02-03-2025 04:12:56', 'DD-MM-YYYY HH24:MI:SS'))
+SELECT STATE_AP,SALARY FROM cte 
+WHERE rnk_min = 1 OR rnk_max = 1 ORDER BY SALARY;
+SET DEFINE ON
