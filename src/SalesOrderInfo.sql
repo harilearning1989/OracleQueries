@@ -16,3 +16,25 @@ CREATE TABLE sales_order_info(
 	Total_Profit number(20,5),
     CONSTRAINT sales_id_PK PRIMARY KEY(sales_id)
 );
+
+----------------------------------------
+MySql
+
+CREATE TABLE sys.sales_order_info(
+    sales_id int NOT NULL AUTO_INCREMENT,
+    Region VARCHAR(50) NOT NULL,
+    Country VARCHAR(50) NOT NULL,
+	Item_Type varchar(50),
+	Sales_Channel varchar(50),
+	Order_Priority char(1),
+	Order_Date timestamp,
+	Order_ID int,
+	Ship_Date timestamp,
+	Units_Sold int,
+	Unit_Price int,
+	Unit_Cost int,
+	Total_Revenue int,
+	Total_Cost int,
+	Total_Profit int,
+    CONSTRAINT sales_id_PK PRIMARY KEY(sales_id)
+);
