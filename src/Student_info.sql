@@ -10,3 +10,13 @@ CREATE TABLE student_info(
 
 select * from student_info where
 (upper(GENDER)='FEMALE' and CATEGORY not in ('SC','ST') OR upper(GENDER)='MALE' and CATEGORY not in ('OC','BC-C','BC-D','SC'));
+
+CREATE TABLE sys.student_info(
+    student_id int NOT NULL AUTO_INCREMENT,
+    student_name VARCHAR(50) NOT NULL,
+    father_name VARCHAR(50) NOT NULL,
+	gender varchar(10),
+	MOBILE long,
+	CATEGORY varchar(20),
+    CONSTRAINT student_id_PK PRIMARY KEY(student_id)
+);
