@@ -14,3 +14,20 @@ CREATE TABLE countries(
 );
 
 create table countries_bkp as select * from countries;
+
+---------------------------------------
+
+CREATE TABLE sys.countries(
+    country_id int NOT NULL AUTO_INCREMENT,
+    country_name VARCHAR(100) NOT NULL,
+    alpha2 char(2),
+    alpha3 char(3),
+    country_code int,
+    region VARCHAR(100),
+    sub_region VARCHAR(100),
+    intermediate_region VARCHAR(100),
+    region_code int,
+    sub_region_code int,
+    intermediate_region_code int,
+    CONSTRAINT country_id_PK PRIMARY KEY(country_id)
+);
