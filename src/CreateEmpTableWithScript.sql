@@ -63,7 +63,7 @@ BEGIN
   FOR i IN start_value..end_value
   LOOP 
     select 'Duddukunta' || trunc(dbms_random.value(1,1000)),'Hari' || trunc(dbms_random.value(1,1000)),
-    education_type_tmp(trunc(dbms_random.value(1,7))),trunc(dbms_random.value(1,100)),
+    education_type_tmp(trunc(dbms_random.value(1,7))),trunc(dbms_random.value(20,70)),
     trunc(dbms_random.value(10000,100000),2)
     INTO FIRST_NAME,LAST_NAME,education,age,salary  from dual;    
   
