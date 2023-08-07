@@ -1,0 +1,97 @@
+
+docker pull gvenzl/oracle-xe
+
+docker run -e ORACLE_RANDOM_PASSWORD=yes -p 1521:1521 -d gvenzl/oracle-xe
+docker run -e ORACLE_RANDOM_PASSWORD=yes -p 1521:1521 gvenzl/oracle-xe
+
+-v $HOME/DOCKER/dockerOracleDB/datafiles19c:/opt/oracle/oradata oracle19.3.0:or19c
+-v /Users/hariduddukunta/MyWork/Softwares/Oracle/data:/opt/oracle/oradata
+
+Uninstall docker desktop if installed
+brew install colima
+brew install docker
+colima start --memory 4 --arch x86_64
+docker run --name oracle-db -e ORACLE_PASSWORD=dudkrish1A -p 1521:1521 -v /Users/hariduddukunta/MyWork/Softwares/Oracle/data:/opt/oracle/oradata gvenzl/oracle-xe
+docker run --name oracle-db -e ORACLE_PASSWORD=dudkrish1A -e ORACLE_CHARACTERSET=AL32UTF8 -p 1521:1521 -p 8081:8080 -p 5700:5500 -v /Users/hariduddukunta/MyWork/Softwares/Oracle/data:/opt/oracle/oradata gvenzl/oracle-xe
+sqlplus system/dudkrish1A@localhost:1522/XE
+
+Run an Oracle DB image using docker (e.g docker run -e ORACLE_RANDOM_PASSWORD=yes -p 1521:1521 -d gvenzl/oracle-xe)
+docker run -e ORACLE_RANDOM_PASSWORD=yes -p 1521:1521 gvenzl/oracle-xe
+docker run -e ORACLE_RANDOM_PASSWORD=yes -p 1521:1521 -d gvenzl/oracle-xe
+
+docker exec -it CONTAINER_ID bash
+docker exec -it a31246c943a1 bash
+to get hostname
+docker inspect 8e98d3a615b2 | grep "IPAddress"
+
+sqlplus sys as sysdba
+password oracle
+lsnrctl status
+
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+grant all privileges to oracle_demo ;
+
+CREATE USER oracle_demo IDENTIFIED BY dudkrish1A;
+
+
+sqlplus sysdba/oracle@172.17.0.2:1521/XE
+sqlplus system/dudkrish1A@172.17.0.2:1521/XE
+sqlplus sys/dudkrish1A@//localhost:1521/ORCLCDB as sysdba
+
+-------------------------------------------------------
+colima start --memory 4 --arch x86_64
+docker run \
+--name oracle19c \
+-p 1521:1521 \
+-p 5500:5500 \
+-e ORACLE_PDB=orcl \
+-e ORACLE_PWD=dudkrish1A \
+-v /Users/hariduddukunta/MyWork/Softwares/Oracle/data/:/opt/oracle/oradata \
+doctorkirk/oracle-19c:latest
+
+host         localhost
+port         1521
+Service Name ORCLCDB
+username     sys
+Role         SYSDBA
+Password     dudkrish1A
+
+-------------------------------
+
+
+removing docker cache 
+
+sudo rm -Rf /Applications/Docker.app \
+sudo rm -f /usr/local/bin/docker \
+sudo rm -f /usr/local/bin/docker-machine \
+sudo rm -f /usr/local/bin/com.docker.cli \
+sudo rm -f /usr/local/bin/docker-compose \
+sudo rm -f /usr/local/bin/docker-compose-v1 \
+sudo rm -f /usr/local/bin/docker-credential-desktop \
+sudo rm -f /usr/local/bin/docker-credential-ecr-login \
+sudo rm -f /usr/local/bin/docker-credential-osxkeychain \
+sudo rm -f /usr/local/bin/hub-tool \
+sudo rm -f /usr/local/bin/hyperkit \
+sudo rm -f /usr/local/bin/kubectl.docker \
+sudo rm -f /usr/local/bin/vpnkit \
+sudo rm -Rf ~/.docker \
+sudo rm -Rf ~/Library/Containers/com.docker.docker \
+sudo rm -Rf ~/Library/Application\Support\Docker\Desktop \
+sudo rm -Rf ~/Library/Group\ Containers/group.com.docker \
+sudo rm -f ~/Library/HTTPStorages/com.docker.docker.binarycookies \
+sudo rm -f /Library/PrivilegedHelperTools/com.docker.vmnetd \
+sudo rm -f /Library/LaunchDaemons/com.docker.vmnetd.plist \
+sudo rm -Rf ~/Library/Logs/Docker/Desktop \ 
+sudo rm -Rf /usr/local/lib/docker \
+sudo rm -f ~/Library/Preferences/com.docker.docker.plist \
+sudo rm -Rf ~/Library/Saved\ Application\ State/com.electron.docker-frontend.savedState \
+sudo rm -f ~/Library/Preferences/com.electron.docker-frontend.plist \
+sudo rm -Rf /Applications/Docker \
+sudo rm -f /usr/local/bin/docker \
+sudo rm -f /usr/local/bin/docker-machine \
+sudo rm -f /usr/local/bin/docker-compose \
+sudo rm -f /usr/local/bin/docker-credential-osxkeychain \
+sudo rm -Rf ~/.docker \
+sudo rm -Rf $HOME/Library/Containers/com.docker.docker
