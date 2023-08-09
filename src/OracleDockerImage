@@ -20,7 +20,7 @@ docker run -e ORACLE_RANDOM_PASSWORD=yes -p 1521:1521 gvenzl/oracle-xe
 docker run -e ORACLE_RANDOM_PASSWORD=yes -p 1521:1521 -d gvenzl/oracle-xe
 
 docker exec -it CONTAINER_ID bash
-docker exec -it a31246c943a1 bash
+docker exec -it 43d6085dbc2f bash
 to get hostname
 docker inspect 8e98d3a615b2 | grep "IPAddress"
 
@@ -40,14 +40,51 @@ sqlplus sysdba/oracle@172.17.0.2:1521/XE
 sqlplus system/dudkrish1A@172.17.0.2:1521/XE
 sqlplus sys/dudkrish1A@//localhost:1521/ORCLCDB as sysdba
 
+alter user sys identified by "iAmTheDBA!";
+
 -------------------------------------------------------
+https://fullstackcode.dev/2022/07/09/run-oracle-database-with-docker/
+=======================================
+colima start --memory 4 --arch x86_64
+sudo docker run \
+--name oracle_db \
+-e ORACLE_PASSWORD=dudkrish1A \
+-p 1521:1521 \
+-p 5500:5500 \
+-v /Users/hariduddukunta/MyWork/Softwares/Oracle/data/:/opt/oracle/oradata \
+gvenzl/oracle-xe:21
+
+alter user sys identified by "dudkrish1A";
+
+---------------------------------------------
+Working fine
+
+docker run \
+--name oracle_db \
+-e ORACLE_PASSWORD=dudkrish1A \
+-p 1521:1521 \
+-p 5500:5500 \
+gvenzl/oracle-xe:21
+
+localhost
+1521
+XE service name
+sys SYSDBA
+dudkrish1A
+
+docker exec -it 5615eeddc0ab bash
+
+sqlplus sys as sysdba
+
+grant all privileges to oracle_demo ;
+
+=============================================
 colima start --memory 4 --arch x86_64
 docker run \
 --name oracle19c \
 -p 1521:1521 \
 -p 5500:5500 \
 -e ORACLE_PDB=orcl \
--e ORACLE_PWD=dudkrish1A \
 -v /Users/hariduddukunta/MyWork/Softwares/Oracle/data/:/opt/oracle/oradata \
 doctorkirk/oracle-19c:latest
 
@@ -57,6 +94,15 @@ Service Name ORCLCDB
 username     sys
 Role         SYSDBA
 Password     dudkrish1A
+
+docker run \
+--name oracle19c \
+-p 1521:1521 \
+-p 5500:5500 \
+-e ORACLE_PDB=orcl \
+-e ORACLE_PWD=dudkrish1A \
+-v /Users/hariduddukunta/MyWork/Softwares/Oracle/data/:/opt/oracle/oradata \
+doctorkirk/oracle-19c:latest
 
 -------------------------------
 
