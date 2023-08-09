@@ -58,7 +58,7 @@ alter user sys identified by "dudkrish1A";
 
 ---------------------------------------------
 Working fine
-
+colima start --memory 4 --arch x86_64
 docker run \
 --name oracle_db \
 -e ORACLE_PASSWORD=dudkrish1A \
